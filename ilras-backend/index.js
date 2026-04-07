@@ -18,11 +18,13 @@ const aiRoutes = require('./routes/ai');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
-if (process.env.FRONTEND_URL) {
-  allowedOrigins.push(process.env.FRONTEND_URL);
-}
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(cors({ 
+  origin: function (origin, callback) {
+    // Dynamically allow any incoming origin (perfect for hackathon deployments)
+    callback(null, true);
+  }, 
+  credentials: true 
+}));
 app.use(express.json());
 
 // Serve static files from the uploads directory
