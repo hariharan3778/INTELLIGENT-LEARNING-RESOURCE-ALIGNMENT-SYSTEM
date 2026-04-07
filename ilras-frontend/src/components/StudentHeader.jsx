@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTheme } from '../context/ThemeContext';
 
 const StudentHeader = ({ searchTerm, setSearchTerm, selectedDepartment, setSelectedDepartment }) => {
     const { theme, toggleTheme } = useTheme();
+    const navigate = useNavigate();
 
     const [userName, setUserName] = useState('Student');
     const [userPic, setUserPic] = useState('https://ui-avatars.com/api/?name=Student&background=random');
@@ -46,7 +48,7 @@ const StudentHeader = ({ searchTerm, setSearchTerm, selectedDepartment, setSelec
 
     const handleLogout = () => {
         localStorage.clear();
-        window.location.href = '/login';
+        navigate('/login');
     };
 
     return (
