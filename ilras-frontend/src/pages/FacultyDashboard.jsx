@@ -47,14 +47,14 @@ const FacultyDashboard = () => {
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
       const [statsRes, resourcesRes, coursesRes, inboxRes, feedbackRes, timetableRes, curriculumRes, unreadRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/faculty/stats', config),
-        axios.get('http://localhost:5000/api/faculty/resources', config),
-        axios.get('http://localhost:5000/api/courses', config),
-        axios.get('http://localhost:5000/api/messages/inbox/recent', config).catch(() => ({ data: [] })),
-        axios.get('http://localhost:5000/api/faculty/feedback', config).catch(() => ({ data: [] })),
-        axios.get('http://localhost:5000/api/faculty/timetable', config).catch(() => ({ data: [] })),
-        axios.get('http://localhost:5000/api/faculty/curriculum', config).catch(() => ({ data: [] })),
-        axios.get('http://localhost:5000/api/messages/unread/count', config).catch(() => ({ data: { count: 0 } }))
+        axios.get(`${import.meta.env.VITE_API_URL}/faculty/stats`, config),
+        axios.get(`${import.meta.env.VITE_API_URL}/faculty/resources`, config),
+        axios.get(`${import.meta.env.VITE_API_URL}/courses`, config),
+        axios.get(`${import.meta.env.VITE_API_URL}/messages/inbox/recent`, config).catch(() => ({ data: [] })),
+        axios.get(`${import.meta.env.VITE_API_URL}/faculty/feedback`, config).catch(() => ({ data: [] })),
+        axios.get(`${import.meta.env.VITE_API_URL}/faculty/timetable`, config).catch(() => ({ data: [] })),
+        axios.get(`${import.meta.env.VITE_API_URL}/faculty/curriculum`, config).catch(() => ({ data: [] })),
+        axios.get(`${import.meta.env.VITE_API_URL}/messages/unread/count`, config).catch(() => ({ data: { count: 0 } }))
       ]);
       setStats(statsRes.data);
       setResources(resourcesRes.data);
@@ -78,19 +78,19 @@ const FacultyDashboard = () => {
 
         // Poll inbox
         if (isInboxOpen) {
-          const inboxRes = await axios.get('http://localhost:5000/api/messages/inbox/recent', { headers: { Authorization: `Bearer ${token}` } });
+          const inboxRes = await axios.get(`${import.meta.env.VITE_API_URL}/messages/inbox/recent`, { headers: { Authorization: `Bearer ${token}` } });
           if (inboxRes && inboxRes.data) setInbox(inboxRes.data);
         }
 
         // Poll active chat if open
         if (activeChatUser) {
           if (chatMode === 'direct') {
-            const res = await axios.get(`http://localhost:5000/api/messages/${activeChatUser._id}`, {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/messages/${activeChatUser._id}`, {
               headers: { Authorization: `Bearer ${token}` }
             });
             setChatMessages(res.data.messages);
           } else {
-            const res = await axios.get(`http://localhost:5000/api/messages/group/${activeChatUser._id}`, {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/messages/group/${activeChatUser._id}`, {
               headers: { Authorization: `Bearer ${token}` }
             });
             setChatMessages(res.data.messages || []);
@@ -110,7 +110,7 @@ const FacultyDashboard = () => {
     const pollUnread = async () => {
       try {
         const token = localStorage.getItem('userToken');
-        const res = await axios.get('http://localhost:5000/api/messages/unread/count', { headers: { Authorization: `Bearer ${token}` } });
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/messages/unread/count`, { headers: { Authorization: `Bearer ${token}` } });
         setUnreadCount(res.data.count);
       } catch (err) { }
     };
@@ -127,19 +127,19 @@ const FacultyDashboard = () => {
       const token = localStorage.getItem('userToken');
 
       if (mode === 'direct') {
-        const res = await axios.get(`http://localhost:5000/api/messages/${userOrCourse._id}`, {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/messages/${userOrCourse._id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setChatMessages(res.data.messages);
 
         // Mark as read
-        await axios.put(`http://localhost:5000/api/messages/mark-read/${userOrCourse._id}`, {}, {
+        await axios.put(`${import.meta.env.VITE_API_URL}/messages/mark-read/${userOrCourse._id}`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUnreadCount(prev => Math.max(0, prev - 1)); // Optimistic local update
       } else {
         // Group Chat
-        const res = await axios.get(`http://localhost:5000/api/messages/group/${userOrCourse._id}`, {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/messages/group/${userOrCourse._id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setChatMessages(res.data.messages || []);
@@ -157,7 +157,7 @@ const FacultyDashboard = () => {
       const receiverId = chatMode === 'group' ? 'group' : activeChatUser._id;
       const courseId = chatMode === 'group' ? activeChatUser._id : undefined;
 
-      const res = await axios.post('http://localhost:5000/api/messages/send', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/messages/send`, {
         receiverId: receiverId,
         courseId: courseId,
         content: replyText
@@ -182,7 +182,7 @@ const FacultyDashboard = () => {
     setSearchedStudent(null);
     try {
       const token = localStorage.getItem('userToken');
-      const res = await axios.get(`http://localhost:5000/api/faculty/search-student?name=${studentSearchName}`, {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/faculty/search-student?name=${studentSearchName}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSearchedStudent(res.data);
@@ -216,7 +216,7 @@ const FacultyDashboard = () => {
 
       const config = { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } };
 
-      const res = await axios.post('http://localhost:5000/api/faculty/add-resource', formData, config);
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/faculty/add-resource`, formData, config);
       if (res.data.success) {
         setResources([res.data.resource, ...resources]);
         setUploadData({ title: '', link: '', youtubeLink: '', subject: 'Web Development', difficulty: 'Beginner', file: null });
@@ -233,7 +233,7 @@ const FacultyDashboard = () => {
     if (!window.confirm("Delete this resource?")) return;
     try {
       const token = localStorage.getItem('userToken');
-      await axios.delete(`http://localhost:5000/api/faculty/resource/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/faculty/resource/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setResources(resources.filter(r => r._id !== id));

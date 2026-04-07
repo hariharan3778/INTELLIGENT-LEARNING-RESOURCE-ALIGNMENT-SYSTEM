@@ -14,7 +14,7 @@ const Saved = () => {
                 const token = localStorage.getItem('userToken');
                 const config = { headers: { Authorization: `Bearer ${token}` } };
                 // Fetch actual bookmarks instead of generic global resources
-                const res = await axios.get('http://localhost:5000/api/dashboard-data/bookmarks', config);
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/dashboard-data/bookmarks`, config);
                 // The API populates the savedResources array, so we get an array of Resource objects
                 setSavedResources(res.data);
             } catch (error) {
@@ -30,7 +30,7 @@ const Saved = () => {
     const removeBookmark = async (resourceId) => {
         try {
             const token = localStorage.getItem('userToken');
-            await axios.delete(`http://localhost:5000/api/dashboard-data/bookmarks/${resourceId}`, {
+            await axios.delete(`${import.meta.env.VITE_API_URL}/dashboard-data/bookmarks/${resourceId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSavedResources(savedResources.filter(r => r._id !== resourceId));
@@ -122,7 +122,7 @@ const Saved = () => {
 
                                 <div className="mt-6 flex space-x-3 pt-6 border-t border-gray-800/50">
                                     <a
-                                        href={resource.youtubeLink || (resource.fileUrl ? `http://localhost:5000${resource.fileUrl}` : resource.link)}
+                                        href={resource.youtubeLink || (resource.fileUrl ? `${import.meta.env.VITE_API_URL}${resource.fileUrl}` : resource.link)}
                                         target="_blank"
                                         rel="noreferrer"
                                         className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2.5 rounded-lg font-bold text-sm transition-colors shadow-lg shadow-blue-500/20"

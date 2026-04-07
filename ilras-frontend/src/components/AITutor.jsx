@@ -39,7 +39,7 @@ const AITutor = () => {
     const fetchHistory = async () => {
         try {
             const token = localStorage.getItem('userToken');
-            const res = await axios.get('http://localhost:5000/api/ai/history', { 
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/ai/history`, { 
                 headers: { Authorization: `Bearer ${token}` } 
             });
             if (res.data.success) {
@@ -53,7 +53,7 @@ const AITutor = () => {
     const loadChat = async (id) => {
         try {
             const token = localStorage.getItem('userToken');
-            const res = await axios.get(`http://localhost:5000/api/ai/history/${id}`, { 
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/ai/history/${id}`, { 
                 headers: { Authorization: `Bearer ${token}` } 
             });
             if (res.data.success) {
@@ -73,7 +73,7 @@ const AITutor = () => {
         e.stopPropagation();
         try {
             const token = localStorage.getItem('userToken');
-            await axios.delete(`http://localhost:5000/api/ai/history/${id}`, { 
+            await axios.delete(`${import.meta.env.VITE_API_URL}/ai/history/${id}`, { 
                 headers: { Authorization: `Bearer ${token}` } 
             });
             setChats(chats.filter(c => c._id !== id));
@@ -103,7 +103,7 @@ const AITutor = () => {
 
         try {
             const token = localStorage.getItem('userToken');
-            const response = await axios.post('http://localhost:5000/api/ai/ask', 
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/ai/ask`, 
                 { prompt: userText, chatId: currentChatId }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             );

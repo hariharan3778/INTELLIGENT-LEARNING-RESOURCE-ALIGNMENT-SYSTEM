@@ -24,7 +24,7 @@ const Analytics = () => {
                 const config = { headers: { Authorization: `Bearer ${token}` } };
 
 
-                const res = await axios.get('http://localhost:5000/api/analytics/student', config);
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/analytics/student`, config);
                 setData(res.data);
             } catch (error) {
                 console.error('Failed to fetch analytics:', error);

@@ -38,8 +38,8 @@ const Schedule = () => {
                 const config = { headers: { Authorization: `Bearer ${token}` } };
 
                 const [timetableRes, coursesRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/dashboard-data/timetable', config),
-                    axios.get('http://localhost:5000/api/courses', config)
+                    axios.get(`${import.meta.env.VITE_API_URL}/dashboard-data/timetable`, config),
+                    axios.get(`${import.meta.env.VITE_API_URL}/courses`, config)
                 ]);
 
                 setClasses(timetableRes.data);
@@ -77,7 +77,7 @@ const Schedule = () => {
                 color: formData.color
             };
 
-            const res = await axios.post('http://localhost:5000/api/dashboard-data/timetable', newBlock, {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/dashboard-data/timetable`, newBlock, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -96,7 +96,7 @@ const Schedule = () => {
         e.stopPropagation();
         try {
             const token = localStorage.getItem('userToken');
-            const res = await axios.delete(`http://localhost:5000/api/dashboard-data/timetable/${blockId}`, {
+            const res = await axios.delete(`${import.meta.env.VITE_API_URL}/dashboard-data/timetable/${blockId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setClasses(res.data.timetable);

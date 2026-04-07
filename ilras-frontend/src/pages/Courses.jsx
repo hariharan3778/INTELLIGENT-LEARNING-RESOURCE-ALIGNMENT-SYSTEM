@@ -18,7 +18,7 @@ const Courses = () => {
         setIsLoading(true);
         try {
             const token = localStorage.getItem('userToken');
-            const res = await axios.get(`http://localhost:5000/api/curriculum?department=${department}&semester=${semester}`, {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/curriculum?department=${department}&semester=${semester}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setCurriculumData(res.data);
@@ -32,7 +32,7 @@ const Courses = () => {
     const handleSeedData = async () => {
         try {
             const token = localStorage.getItem('userToken');
-            await axios.post('http://localhost:5000/api/curriculum/seed', {}, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/curriculum/seed`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('Database seeded successfully! Refreshing data...');

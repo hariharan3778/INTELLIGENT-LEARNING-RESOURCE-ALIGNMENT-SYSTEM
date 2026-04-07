@@ -27,7 +27,7 @@ const StudentHeader = ({ searchTerm, setSearchTerm, selectedDepartment, setSelec
         try {
             const token = localStorage.getItem('userToken');
             const config = { headers: { Authorization: `Bearer ${token}` } };
-            const res = await axios.get('http://localhost:5000/api/dashboard-data/notifications', config);
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/dashboard-data/notifications`, config);
             setNotifications(res.data);
         } catch (error) {
             console.error('Error fetching notifications:', error);
@@ -37,7 +37,7 @@ const StudentHeader = ({ searchTerm, setSearchTerm, selectedDepartment, setSelec
     const handleNotificationClick = async (id) => {
         try {
             const token = localStorage.getItem('userToken');
-            await axios.put(`http://localhost:5000/api/dashboard-data/notifications/${id}/read`, {}, {
+            await axios.put(`${import.meta.env.VITE_API_URL}/dashboard-data/notifications/${id}/read`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotifications(notifications.map(n => n._id === id ? { ...n, isRead: true } : n));

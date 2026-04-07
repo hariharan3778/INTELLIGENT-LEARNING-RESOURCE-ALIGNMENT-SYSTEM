@@ -26,7 +26,7 @@ const FacultyLayout = () => {
     const fetchNotifications = async () => {
         try {
             const token = localStorage.getItem('userToken');
-            const res = await axios.get('http://localhost:5000/api/dashboard-data/notifications', {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/dashboard-data/notifications`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotifications(res.data);
@@ -38,7 +38,7 @@ const FacultyLayout = () => {
     const markAsRead = async (id) => {
         try {
             const token = localStorage.getItem('userToken');
-            await axios.put(`http://localhost:5000/api/dashboard-data/notifications/${id}/read`, {}, {
+            await axios.put(`${import.meta.env.VITE_API_URL}/dashboard-data/notifications/${id}/read`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNotifications(notifications.map(n =>

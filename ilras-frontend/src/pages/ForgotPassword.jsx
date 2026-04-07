@@ -15,7 +15,7 @@ function ForgotPassword() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/forgotpassword', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/forgotpassword`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

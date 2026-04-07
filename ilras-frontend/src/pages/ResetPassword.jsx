@@ -6,8 +6,8 @@ function ResetPassword() {
   const { token } = useParams();
   const navigate = useNavigate();
   
-  const [password, setPassword] = require('react').useState('');
-  const [confirmPassword, setConfirmPassword] = require('react').useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -30,7 +30,7 @@ function ResetPassword() {
     setError('');
 
     try {
-      const response = await fetch(`http://localhost:5000/api/auth/resetpassword/${token}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/resetpassword/${token}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -23,7 +23,7 @@ const Signup = ({ onLogin }) => {
             
             const authenticateGithub = async () => {
                 try {
-                    const res = await axios.post('http://localhost:5000/api/auth/github-login', {
+                    const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/github-login`, {
                         code,
                         role: pendingRole
                     });
@@ -66,7 +66,7 @@ const Signup = ({ onLogin }) => {
         setErrorMsg('');
 
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/register', {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/register`, {
                 name,
                 email,
                 password,

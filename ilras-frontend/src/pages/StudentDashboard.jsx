@@ -49,7 +49,7 @@ const StudentDashboard = () => {
       try {
         const token = localStorage.getItem('userToken');
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        const res = await axios.get('http://localhost:5000/api/courses', config);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/courses`, config);
         setCourses(res.data);
       } catch (error) {
         console.error('Failed to fetch courses:', error);
@@ -65,8 +65,8 @@ const StudentDashboard = () => {
         const config = { headers: { Authorization: `Bearer ${token}` } };
 
         const [activityRes, feedbackRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/dashboard/activity', config),
-          axios.get('http://localhost:5000/api/dashboard/feedback', config)
+          axios.get(`${import.meta.env.VITE_API_URL}/dashboard/activity`, config),
+          axios.get(`${import.meta.env.VITE_API_URL}/dashboard/feedback`, config)
         ]);
         setActivityData(activityRes.data);
         setFeedbackData(feedbackRes.data);
@@ -78,7 +78,7 @@ const StudentDashboard = () => {
     const fetchUnread = async () => {
       try {
         const token = localStorage.getItem('userToken');
-        const res = await axios.get('http://localhost:5000/api/messages/unread/count', { headers: { Authorization: `Bearer ${token}` } });
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/messages/unread/count`, { headers: { Authorization: `Bearer ${token}` } });
         setUnreadCount(res.data.count);
       } catch (err) { }
     };
@@ -98,7 +98,7 @@ const StudentDashboard = () => {
       if (activeChatUser?._id === 'admin') {
         try {
           const token = localStorage.getItem('userToken');
-          const res = await axios.get('http://localhost:5000/api/messages/admin', {
+          const res = await axios.get(`${import.meta.env.VITE_API_URL}/messages/admin`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           setAdminMessages(res.data.messages || []);
@@ -124,14 +124,14 @@ const StudentDashboard = () => {
       try {
         const token = localStorage.getItem('userToken');
 
-        const groupRes = await axios.get(`http://localhost:5000/api/messages/group/${selectedCourse._id}`, {
+        const groupRes = await axios.get(`${import.meta.env.VITE_API_URL}/messages/group/${selectedCourse._id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setGroupMessages(groupRes.data.messages || []);
 
         const instructorRef = selectedCourse.instructorId || selectedCourse.instructor;
         if (instructorRef) {
-          const directRes = await axios.get(`http://localhost:5000/api/messages/${instructorRef}`, {
+          const directRes = await axios.get(`${import.meta.env.VITE_API_URL}/messages/${instructorRef}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           setDirectMessages(directRes.data.messages || []);
@@ -155,7 +155,7 @@ const StudentDashboard = () => {
     setIsSendingMessage(true);
     try {
       const token = localStorage.getItem('userToken');
-      const res = await axios.post('http://localhost:5000/api/messages/send', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/messages/send`, {
         receiverId: 'admin',
         content: messageText
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -197,26 +197,26 @@ const StudentDashboard = () => {
     try {
       const token = localStorage.getItem('userToken');
 
-      const res = await axios.get(`http://localhost:5000/api/courses/${course._id}/resources`, {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/courses/${course._id}/resources`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCourseResources(res.data);
 
-      const groupRes = await axios.get(`http://localhost:5000/api/messages/group/${course._id}`, {
+      const groupRes = await axios.get(`${import.meta.env.VITE_API_URL}/messages/group/${course._id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setGroupMessages(groupRes.data.messages || []);
 
       const instructorRef = course.instructorId || course.instructor;
       if (instructorRef) {
-        const directRes = await axios.get(`http://localhost:5000/api/messages/${instructorRef}`, {
+        const directRes = await axios.get(`${import.meta.env.VITE_API_URL}/messages/${instructorRef}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setDirectMessages(directRes.data.messages || []);
         setInstructorUser(directRes.data.otherUser);
 
         // Mark as read
-        await axios.put(`http://localhost:5000/api/messages/mark-read/${instructorRef}`, {}, {
+        await axios.put(`${import.meta.env.VITE_API_URL}/messages/mark-read/${instructorRef}`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUnreadCount(prev => Math.max(0, prev - 1));
@@ -234,7 +234,7 @@ const StudentDashboard = () => {
       const token = localStorage.getItem('userToken');
       const receiverId = chatMode === 'group' ? 'group' : (selectedCourse.instructorId || selectedCourse.instructor);
 
-      const res = await axios.post('http://localhost:5000/api/messages/send', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/messages/send`, {
         receiverId: receiverId,
         courseId: selectedCourse._id,
         content: messageText
@@ -264,12 +264,12 @@ const StudentDashboard = () => {
       const isBookmarked = bookmarkedResources.includes(resourceId);
 
       if (isBookmarked) {
-        await axios.delete(`http://localhost:5000/api/dashboard-data/bookmarks/${resourceId}`, {
+        await axios.delete(`${import.meta.env.VITE_API_URL}/dashboard-data/bookmarks/${resourceId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setBookmarkedResources(bookmarkedResources.filter(id => id !== resourceId));
       } else {
-        await axios.post(`http://localhost:5000/api/dashboard-data/bookmarks/${resourceId}`, {}, {
+        await axios.post(`${import.meta.env.VITE_API_URL}/dashboard-data/bookmarks/${resourceId}`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setBookmarkedResources([...bookmarkedResources, resourceId]);
@@ -572,7 +572,7 @@ const StudentDashboard = () => {
                               Watch Video
                             </button>
                           ) : (
-                            <a href={resource.link || (resource.fileUrl ? `http://localhost:5000${resource.fileUrl}` : '#')} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded">
+                            <a href={resource.link || (resource.fileUrl ? `${import.meta.env.VITE_API_URL}${resource.fileUrl}` : '#')} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded">
                               View Content
                             </a>
                           )}

@@ -37,7 +37,7 @@ const AdminDashboard = () => {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('userToken');
-      const res = await axios.get('http://localhost:5000/api/admin/users', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/admin/users`, { headers: { Authorization: `Bearer ${token}` } });
       setUsersList(res.data.users || []);
     } catch (error) { console.error('Failed to fetch users'); }
   };
@@ -45,7 +45,7 @@ const AdminDashboard = () => {
   const fetchCourses = async () => {
     try {
       const token = localStorage.getItem('userToken');
-      const res = await axios.get('http://localhost:5000/api/admin/courses', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/admin/courses`, { headers: { Authorization: `Bearer ${token}` } });
       setCoursesList(res.data.courses || []);
     } catch (error) { console.error('Failed to fetch courses'); }
   };
@@ -60,9 +60,9 @@ const AdminDashboard = () => {
         const config = { headers: { Authorization: `Bearer ${token}` } };
 
         const [statsRes, activityRes, unreadRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/admin/stats', config),
-          axios.get('http://localhost:5000/api/admin/activity', config),
-          axios.get('http://localhost:5000/api/messages/unread/count', config).catch(() => ({ data: { count: 0 } }))
+          axios.get(`${import.meta.env.VITE_API_URL}/admin/stats`, config),
+          axios.get(`${import.meta.env.VITE_API_URL}/admin/activity`, config),
+          axios.get(`${import.meta.env.VITE_API_URL}/messages/unread/count`, config).catch(() => ({ data: { count: 0 } }))
         ]);
 
         setStats(statsRes.data);
@@ -86,7 +86,7 @@ const AdminDashboard = () => {
   const fetchInbox = async () => {
     try {
       const token = localStorage.getItem('userToken');
-      const res = await axios.get('http://localhost:5000/api/messages/inbox/recent', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/messages/inbox/recent`, { headers: { Authorization: `Bearer ${token}` } });
       setInbox(res.data);
     } catch (error) { console.error('Failed to fetch inbox'); }
   };
@@ -94,12 +94,12 @@ const AdminDashboard = () => {
   const fetchChatWithUser = async (userId) => {
     try {
       const token = localStorage.getItem('userToken');
-      const res = await axios.get(`http://localhost:5000/api/messages/${userId}`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/messages/${userId}`, { headers: { Authorization: `Bearer ${token}` } });
       setChatMessages(res.data.messages);
       setSelectedChatUser(res.data.otherUser);
 
       // Mark as read
-      await axios.put(`http://localhost:5000/api/messages/mark-read/${userId}`, {}, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/messages/mark-read/${userId}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUnreadCount(prev => Math.max(0, prev - 1));
@@ -112,7 +112,7 @@ const AdminDashboard = () => {
     setIsSending(true);
     try {
       const token = localStorage.getItem('userToken');
-      const res = await axios.post('http://localhost:5000/api/messages/send', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/messages/send`, {
         receiverId: selectedChatUser._id,
         content: messageText
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -134,16 +134,16 @@ const AdminDashboard = () => {
           const token = localStorage.getItem('userToken');
 
           // Poll inbox list
-          const inboxRes = await axios.get('http://localhost:5000/api/messages/inbox/recent', { headers: { Authorization: `Bearer ${token}` } });
+          const inboxRes = await axios.get(`${import.meta.env.VITE_API_URL}/messages/inbox/recent`, { headers: { Authorization: `Bearer ${token}` } });
           setInbox(inboxRes.data);
 
           // Poll active chat if someone is selected
           if (selectedChatUser) {
-            const chatRes = await axios.get(`http://localhost:5000/api/messages/${selectedChatUser._id}`, { headers: { Authorization: `Bearer ${token}` } });
+            const chatRes = await axios.get(`${import.meta.env.VITE_API_URL}/messages/${selectedChatUser._id}`, { headers: { Authorization: `Bearer ${token}` } });
             setChatMessages(chatRes.data.messages);
           }
           // Poll unread count
-          const unreadRes = await axios.get('http://localhost:5000/api/messages/unread/count', { headers: { Authorization: `Bearer ${token}` } });
+          const unreadRes = await axios.get(`${import.meta.env.VITE_API_URL}/messages/unread/count`, { headers: { Authorization: `Bearer ${token}` } });
           setUnreadCount(unreadRes.data.count);
         } catch (err) {
           console.error("Failed to poll queries", err);
@@ -161,7 +161,7 @@ const AdminDashboard = () => {
   const handleBlockUser = async (id) => {
     try {
       const token = localStorage.getItem('userToken');
-      await axios.put(`http://localhost:5000/api/admin/users/${id}/block`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.put(`${import.meta.env.VITE_API_URL}/admin/users/${id}/block`, {}, { headers: { Authorization: `Bearer ${token}` } });
       fetchUsers();
     } catch (error) { console.error('Failed to toggle block'); }
   };
@@ -170,7 +170,7 @@ const AdminDashboard = () => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
     try {
       const token = localStorage.getItem('userToken');
-      await axios.delete(`http://localhost:5000/api/admin/users/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`${import.meta.env.VITE_API_URL}/admin/users/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       fetchUsers();
     } catch (error) { console.error('Failed to delete user'); }
   };
@@ -179,7 +179,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('userToken');
-      await axios.post('http://localhost:5000/api/admin/courses', newCourse, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${import.meta.env.VITE_API_URL}/admin/courses`, newCourse, { headers: { Authorization: `Bearer ${token}` } });
       setNewCourse({ title: '', instructor: '', level: 'Beginner', category: 'Common', thumbnail: '' });
       fetchCourses();
     } catch (error) { console.error('Failed to add course'); }
@@ -189,7 +189,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('userToken');
-      await axios.put(`http://localhost:5000/api/admin/courses/${editingCourse._id}`, editingCourse, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.put(`${import.meta.env.VITE_API_URL}/admin/courses/${editingCourse._id}`, editingCourse, { headers: { Authorization: `Bearer ${token}` } });
       setEditingCourse(null);
       fetchCourses();
     } catch (error) { console.error('Failed to update course'); }
@@ -199,7 +199,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('userToken');
-      await axios.post('http://localhost:5000/api/admin/users', newUser, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${import.meta.env.VITE_API_URL}/admin/users`, newUser, { headers: { Authorization: `Bearer ${token}` } });
       setNewUser({ name: '', email: '', role: 'student', password: '' });
       setIsAddUserModalOpen(false);
       fetchUsers();
@@ -210,7 +210,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('userToken');
-      await axios.put(`http://localhost:5000/api/admin/users/${editingUser._id}`, editingUser, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.put(`${import.meta.env.VITE_API_URL}/admin/users/${editingUser._id}`, editingUser, { headers: { Authorization: `Bearer ${token}` } });
       setEditingUser(null);
       fetchUsers();
     } catch (error) { console.error('Failed to update user'); }
@@ -220,7 +220,7 @@ const AdminDashboard = () => {
     if (!window.confirm('Are you sure you want to delete this course?')) return;
     try {
       const token = localStorage.getItem('userToken');
-      await axios.delete(`http://localhost:5000/api/admin/courses/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`${import.meta.env.VITE_API_URL}/admin/courses/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       fetchCourses();
     } catch (error) { console.error('Failed to delete course'); }
   };
