@@ -39,7 +39,7 @@ function App() {
       <Router>
 
         <Routes>
-          <Route path="/" element={<Navigate to={currentUserRole === 'student' ? '/student-dashboard' : currentUserRole === 'faculty' ? '/faculty-dashboard' : currentUserRole === 'admin' ? '/admin-dashboard' : '/login'} replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login onLogin={setCurrentUserRole} />} />
           <Route path="/signup" element={<Signup onLogin={setCurrentUserRole} />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
