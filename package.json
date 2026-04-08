@@ -1,0 +1,7 @@
+{
+  "name": "ilras-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "npm install --prefix ilras-frontend && npm run build --prefix ilras-frontend"
+  }
+}

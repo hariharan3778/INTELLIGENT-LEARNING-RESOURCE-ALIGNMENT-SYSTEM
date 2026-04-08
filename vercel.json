@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm install --prefix ilras-frontend && npm run build --prefix ilras-frontend",
+  "outputDirectory": "ilras-frontend/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
