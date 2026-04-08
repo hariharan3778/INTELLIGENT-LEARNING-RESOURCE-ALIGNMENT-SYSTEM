@@ -375,10 +375,11 @@ router.post('/forgotpassword', async (req, res) => {
 
     await user.save();
 
-    // Create reset url (we assume frontend is running on localhost:5173 for local dev)
-    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    // Create reset url (Dynamic based on where the request comes from)
+    const frontendUrl = process.env.FRONTEND_URL || req.headers.origin || 'http://localhost:5173';
+    const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
-    const message = `You are receiving this email because you (or someone else) has requested a password reset for your ILRAS account.\n\nPlease make a put request to: \n\n${resetUrl}`;
+    const message = `You are receiving this email because you (or someone else) has requested a password reset for your ILRAS account.\n\nPlease click the link below to reset your password (valid for 10 minutes):\n\n${resetUrl}`;
 
     try {
       await sendEmail({
