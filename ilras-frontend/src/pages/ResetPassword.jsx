@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Lock, ArrowRight, Loader } from 'lucide-react';
+import API from '../api';
 
 function ResetPassword() {
   const { token } = useParams();
@@ -30,27 +31,22 @@ function ResetPassword() {
     setError('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/resetpassword/${token}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ password }),
+      const response = await API.put(`/auth/resetpassword/${token}`, {
+        password,
       });
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (response.data.success) {
         setMessage('Password has been successfully reset. You can now log in.');
         setTimeout(() => {
           navigate('/login');
         }, 3000); // Redirect after 3 seconds
       } else {
-        setError(data.message || 'Something went wrong. The link might be expired.');
+        setError(response.data.message || 'Something went wrong. The link might be expired.');
       }
     } catch (err) {
       console.error('Reset Password Error:', err);
-      setError('Network error. Please try again later.');
+      const errorMsg = err.response?.data?.message || 'Network error. Please try again later.';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

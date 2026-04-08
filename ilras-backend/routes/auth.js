@@ -358,9 +358,8 @@ router.post('/forgotpassword', async (req, res) => {
       return res.status(404).json({ success: false, message: 'There is no user with that email' });
     }
 
-    if (!user.password && user.googleId) {
-       return res.status(400).json({ success: false, message: 'You logged in using Google. Please continue using Google to sign in.' });
-    }
+    // Allow Google/GitHub users to set a password if they use 'Forgot Password'
+    // This lets users create a local login method even if they started with social auth.
 
     // Get reset token
     const resetToken = crypto.randomBytes(20).toString('hex');

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowRight, Loader } from 'lucide-react';
+import API from '../api';
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -15,24 +16,17 @@ function ForgotPassword() {
     setError('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/forgotpassword`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
+      const response = await API.post('/auth/forgotpassword', { email });
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (response.data.success) {
         setMessage('If an account with that email exists, we sent a password reset link.');
       } else {
-        setError(data.message || 'Something went wrong. Please try again.');
+        setError(response.data.message || 'Something went wrong. Please try again.');
       }
     } catch (err) {
       console.error('Forgot Password Request Error:', err);
-      setError('Network error. Please try again later.');
+      const errorMsg = err.response?.data?.message || 'Network error. Please try again later.';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
