@@ -4,11 +4,16 @@ const sendEmail = async (options) => {
   // Create reusable transporter object using the default SMTP transport
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST || 'smtp.mailtrap.io',
-    port: process.env.EMAIL_PORT || 2525,
+    port: parseInt(process.env.EMAIL_PORT) || 2525,
+    secure: parseInt(process.env.EMAIL_PORT) === 465, // True for 465, false for 587
     auth: {
       user: process.env.EMAIL_USERNAME,
       pass: process.env.EMAIL_PASSWORD,
     },
+    connectionTimeout: 10000, // 10 seconds timeout
+    tls: {
+      rejectUnauthorized: false // Helps avoid SSL issues in some environments
+    }
   });
 
   // Setup email data
