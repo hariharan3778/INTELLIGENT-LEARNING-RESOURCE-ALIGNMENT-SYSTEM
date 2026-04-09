@@ -20,10 +20,16 @@ router.post('/ask', authMiddleware, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Prompt is required' });
         }
 
-        const model = genAI.getGenerativeModel({ 
-            model: "gemini-1.5-flash",
-            systemInstruction: "You are an elite, highly intelligent academic tutor for the ILRAS platform. Your goal is to help students learn, not just give them the answers. When a student asks a question, explain the underlying concepts clearly, use formatting (bullet points, bold text) for readability, and encourage critical thinking. Do not hallucinate courses that are not part of the standard curriculum. If the student asks about a complex topic, you MUST provide a clickable YouTube search link for them to learn more. Format the link strictly like this: [Watch a video on X](https://www.youtube.com/results?search_query=X). You can also use standard Markdown for bolding, bullet points, and code blocks."
-        });
+        let model;
+        try {
+            model = genAI.getGenerativeModel({ 
+                model: "gemini-1.5-flash",
+                systemInstruction: "You are an elite, highly intelligent academic tutor for the ILRAS platform. Your goal is to help students learn, not just give them the answers. When a student asks a question, explain the underlying concepts clearly, use formatting (bullet points, bold text) for readability, and encourage critical thinking. Do not hallucinate courses that are not part of the standard curriculum. If the student asks about a complex topic, you MUST provide a clickable YouTube search link for them to learn more. Format the link strictly like this: [Watch a video on X](https://www.youtube.com/results?search_query=X). You can also use standard Markdown for bolding, bullet points, and code blocks."
+            });
+        } catch (initError) {
+            console.warn("Fallback to gemini-pro due to initialization error:", initError.message);
+            model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        }
 
         let chat;
         let history = [];
@@ -44,7 +50,19 @@ router.post('/ask', authMiddleware, async (req, res) => {
             history: history,
         });
 
-        const result = await chatSession.sendMessage(prompt);
+        let result;
+        try {
+            result = await chatSession.sendMessage(prompt);
+        } catch (sendError) {
+            if (sendError.message.includes('404') || sendError.message.includes('not found')) {
+                console.warn("Retrying with gemini-pro after send error...");
+                const fallbackModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+                const fallbackSession = fallbackModel.startChat({ history: history });
+                result = await fallbackSession.sendMessage(prompt);
+            } else {
+                throw sendError;
+            }
+        }
         const text = result.response.text();
 
         if (chat) {
